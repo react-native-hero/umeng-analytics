@@ -12,12 +12,15 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
 
     companion object {
 
+        private var channel = ""
+
         // 初始化友盟基础库
         fun init(app: Application, metaData: Bundle, debug: Boolean) {
 
             val appKey = metaData.getString("UMENG_APP_KEY", "").trim()
             val pushSecret = metaData.getString("UMENG_PUSH_SECRET", "").trim()
-            val channel = metaData.getString("UMENG_CHANNEL", "").trim()
+            
+            channel = metaData.getString("UMENG_CHANNEL", "").trim()
 
             UMConfigure.setLogEnabled(debug)
             UMConfigure.init(app, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
@@ -38,6 +41,16 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
 
     override fun getName(): String {
         return "RNTUmengAnalytics"
+    }
+
+    override fun getConstants(): Map<String, Any>? {
+
+        val constants: MutableMap<String, Any> = HashMap()
+
+        constants["CHANNEL"] = channel
+
+        return constants
+
     }
 
     @ReactMethod

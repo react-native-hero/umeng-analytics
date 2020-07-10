@@ -3,10 +3,14 @@
 #import <UMCommon/UMConfigure.h>
 #import <UMCommon/MobClick.h>
 
+NSString *umengChannel = @"";
+
 @implementation RNTUmengAnalytics
 
 + (void)init:(NSString *)appKey channel:(NSString *)channel debug:(BOOL)debug {
 
+    umengChannel = channel;
+    
     [UMConfigure initWithAppkey:appKey channel:channel];
     [UMConfigure setLogEnabled:debug];
 
@@ -20,6 +24,12 @@
 // 天知道为啥友盟需要用主线程，反正不用主线程它就报错
 - (dispatch_queue_t)methodQueue {
     return dispatch_get_main_queue();
+}
+
+- (NSDictionary *)constantsToExport {
+    return @{
+        @"CHANNEL": umengChannel,
+    };
 }
 
 RCT_EXPORT_MODULE(RNTUmengAnalytics);

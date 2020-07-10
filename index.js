@@ -3,9 +3,8 @@ import { NativeModules } from 'react-native'
 
 const { RNTUmengAnalytics } = NativeModules
 
-// enterPage 和 leavePage 必须对称调用
-// 在这里做一层保证
-let currentPage
+// 初始化时配置的渠道
+export const CHANNEL = RNTUmengAnalytics.CHANNEL
 
 export function getDeviceInfo() {
   return RNTUmengAnalytics.getDeviceInfo()
@@ -18,6 +17,10 @@ export function signIn(userId, provider) {
 export function signOut() {
   RNTUmengAnalytics.signOut()
 }
+
+// enterPage 和 leavePage 必须对称调用
+// 在这里做一层保证
+let currentPage
 
 export function enterPage(pageName) {
   if (!currentPage) {
