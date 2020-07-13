@@ -38,8 +38,8 @@ export function leavePage(pageName) {
 
 // 友盟文档规定：id，ts，du 是保留字段，不能作为 event id 及 key 的名称。
 const bannedKeys = {
-  id: true, 
-  ts: true, 
+  id: true,
+  ts: true,
   du: true,
 }
 

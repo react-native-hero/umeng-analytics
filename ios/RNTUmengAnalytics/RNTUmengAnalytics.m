@@ -7,6 +7,10 @@ NSString *umengChannel = @"";
 
 @implementation RNTUmengAnalytics
 
++ (BOOL)requiresMainQueueSetup {
+    return YES;
+}
+
 + (void)init:(NSString *)appKey channel:(NSString *)channel debug:(BOOL)debug {
 
     umengChannel = channel;
@@ -19,11 +23,6 @@ NSString *umengChannel = @"";
 + (void)analytics {
     // 手动采集
     [MobClick setAutoPageEnabled:NO];
-}
-
-// 天知道为啥友盟需要用主线程，反正不用主线程它就报错
-- (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
 }
 
 - (NSDictionary *)constantsToExport {
