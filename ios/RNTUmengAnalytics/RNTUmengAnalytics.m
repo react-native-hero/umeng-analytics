@@ -3,17 +3,13 @@
 #import <UMCommon/UMConfigure.h>
 #import <UMCommon/MobClick.h>
 
-NSString *umengChannel = @"";
-
 @implementation RNTUmengAnalytics
 
-+ (BOOL)requiresMainQueueSetup {
-    return YES;
-}
+static NSString *CHANNEL = @"";
 
 + (void)init:(NSString *)appKey channel:(NSString *)channel debug:(BOOL)debug {
 
-    umengChannel = channel;
+    CHANNEL = channel;
     
     [UMConfigure initWithAppkey:appKey channel:channel];
     [UMConfigure setLogEnabled:debug];
@@ -25,9 +21,17 @@ NSString *umengChannel = @"";
     [MobClick setAutoPageEnabled:NO];
 }
 
++ (BOOL)requiresMainQueueSetup {
+    return YES;
+}
+
+- (dispatch_queue_t)methodQueue {
+    return dispatch_queue_create("com.github.reactnativehero.umenganalytics", DISPATCH_QUEUE_SERIAL);
+}
+
 - (NSDictionary *)constantsToExport {
     return @{
-        @"CHANNEL": umengChannel,
+        @"CHANNEL": CHANNEL,
     };
 }
 

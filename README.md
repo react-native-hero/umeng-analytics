@@ -112,6 +112,9 @@ public static final int *;
 
 ```js
 import {
+  // 初始化友盟时传入的 channel 参数
+  CHANNEL,
+  
   getDeviceInfo,
   signIn,
   signOut,
