@@ -15,7 +15,7 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         private var channel = ""
 
         // 初始化友盟基础库
-        fun init(app: Application, metaData: Bundle, debug: Boolean) {
+        @JvmStatic fun init(app: Application, metaData: Bundle, debug: Boolean) {
 
             val appKey = metaData.getString("UMENG_APP_KEY", "").trim()
             val pushSecret = metaData.getString("UMENG_PUSH_SECRET", "").trim()
@@ -28,7 +28,7 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         }
 
         // 初始化友盟统计
-        fun analytics(app: Application) {
+        @JvmStatic fun analytics(app: Application) {
             // 手动采集
             MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
         }
