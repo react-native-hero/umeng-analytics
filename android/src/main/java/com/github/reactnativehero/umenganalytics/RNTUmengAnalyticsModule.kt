@@ -6,29 +6,33 @@ import com.facebook.react.bridge.*
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 import com.umeng.commonsdk.statistics.common.DeviceConfig
-import java.lang.Exception
 
 class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
 
     companion object {
 
+        private var appKey = ""
+        private var pushSecret = ""
         private var channel = ""
 
         // 初始化友盟基础库
         @JvmStatic fun init(app: Application, metaData: Bundle, debug: Boolean) {
 
-            val appKey = metaData.getString("UMENG_APP_KEY", "").trim()
-            val pushSecret = metaData.getString("UMENG_PUSH_SECRET", "").trim()
+            appKey = metaData.getString("UMENG_APP_KEY", "").trim()
+            pushSecret = metaData.getString("UMENG_PUSH_SECRET", "").trim()
             
             channel = metaData.getString("UMENG_CHANNEL", "").trim()
 
             UMConfigure.setLogEnabled(debug)
-            UMConfigure.init(app, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
+            // https://developer.umeng.com/docs/119267/detail/182050
+            // 在 Applicaiton.onCreate 函数中调用预初始化函数 UMConfigure.preInit()，预初始化函数不会采集设备信息，也不会向友盟后台上报数据
+            UMConfigure.preInit(app, appKey, channel)
 
         }
 
         // 初始化友盟统计
         @JvmStatic fun analytics(app: Application) {
+            UMConfigure.init(app, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
             // 手动采集
             MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
         }
