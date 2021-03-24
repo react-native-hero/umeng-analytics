@@ -1,6 +1,6 @@
 {
   "name": "@react-native-hero/umeng-analytics",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "react native umeng analytics",
   "main": "index.js",
   "scripts": {

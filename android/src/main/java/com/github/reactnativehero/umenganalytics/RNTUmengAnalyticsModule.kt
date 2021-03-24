@@ -20,12 +20,9 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
 
             appKey = metaData.getString("UMENG_APP_KEY", "").trim()
             pushSecret = metaData.getString("UMENG_PUSH_SECRET", "").trim()
-            
             channel = metaData.getString("UMENG_CHANNEL", "").trim()
 
             UMConfigure.setLogEnabled(debug)
-            // https://developer.umeng.com/docs/119267/detail/182050
-            // 在 Applicaiton.onCreate 函数中调用预初始化函数 UMConfigure.preInit()，预初始化函数不会采集设备信息，也不会向友盟后台上报数据
             UMConfigure.preInit(app, appKey, channel)
 
         }
