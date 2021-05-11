@@ -23,13 +23,12 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
             channel = metaData.getString("UMENG_CHANNEL", "").trim()
 
             UMConfigure.setLogEnabled(debug)
-            UMConfigure.preInit(app, appKey, channel)
+            UMConfigure.init(app, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
 
         }
 
         // 初始化友盟统计
         @JvmStatic fun analytics(app: Application) {
-            UMConfigure.init(app, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
             // 手动采集
             MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
         }

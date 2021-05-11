@@ -63,6 +63,17 @@ $ react-native link @react-native-hero/umeng-analytics
 
 ### Android
 
+修改 `android/build.gradle`，如下：
+
+```
+allprojects {
+    repositories {
+        // 确保添加了友盟仓库
+        maven { url 'https://repo1.maven.org/maven2/' }
+    }
+}
+```
+
 `android/app/build.gradle` 根据不同的包填写不同的配置，如下：
 
 ```
@@ -114,7 +125,7 @@ public static final int *;
 import {
   // 初始化友盟时传入的 channel 参数
   CHANNEL,
-  
+
   getDeviceInfo,
   signIn,
   signOut,
