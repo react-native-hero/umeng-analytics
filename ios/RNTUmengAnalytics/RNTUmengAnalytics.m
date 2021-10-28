@@ -14,11 +14,9 @@ static NSString *CHANNEL = @"";
     [UMConfigure initWithAppkey:appKey channel:channel];
     [UMConfigure setLogEnabled:debug];
 
-}
-
-+ (void)analytics {
     // 手动采集
     [MobClick setAutoPageEnabled:NO];
+    
 }
 
 + (BOOL)requiresMainQueueSetup {
@@ -60,6 +58,10 @@ RCT_EXPORT_METHOD(signIn:(NSString *)userId provider:(NSString *)provider) {
 
 RCT_EXPORT_METHOD(signOut) {
     [MobClick profileSignOff];
+}
+
+RCT_EXPORT_METHOD(exitApp) {
+    exit(0);
 }
 
 // 必须配对调用 beginLogPageView 和 endLogPageView 两个函数来完成自动统计

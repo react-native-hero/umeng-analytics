@@ -56,7 +56,6 @@ $ react-native link @react-native-hero/umeng-analytics
   // channel 一般填 App Store，如果有测试环境，可按需填写
   // debug 表示是否打印调试信息
   [RNTUmengAnalytics init:@"appKey" channel:@"App Store" debug:false];
-  [RNTUmengAnalytics analytics];
   return YES;
 }
 ```
@@ -104,8 +103,6 @@ override fun onCreate() {
     // 初始化友盟基础库
     // 第三个参数表示是否显示调试信息
     RNTUmengAnalyticsModule.init(this, metaData, false)
-    // 初始化友盟统计
-    RNTUmengAnalyticsModule.analytics(this)
 }
 ```
 
@@ -126,9 +123,11 @@ import {
   // 初始化友盟时传入的 channel 参数
   CHANNEL,
 
+  init,
   getDeviceInfo,
   signIn,
   signOut,
+  exitApp,
   enterPage,
   leavePage,
   sendEvent,
@@ -136,6 +135,15 @@ import {
   sendEventData,
   sendEventCounter,
 } from '@react-native-hero/umeng-analytics'
+
+// 对于安卓来说，需要等用户同意隐私政策后，再调用 init，js 的 init 才是真正的初始化
+// https://developer.umeng.com/docs/119267/detail/182050
+// 对于 ios 来说，不调用 init 也没问题
+init()
+
+// 提供一个退出 app 的方法
+// 好像 RN 官方也没提供此方法，单个方法不好写一个库，就放在这个库了
+exitApp()
 
 // 集成测试，获取设备信息
 getDeviceInfo().then(data => {

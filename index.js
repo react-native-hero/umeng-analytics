@@ -6,6 +6,12 @@ const { RNTUmengAnalytics } = NativeModules
 // 初始化时配置的渠道
 export const CHANNEL = RNTUmengAnalytics.CHANNEL
 
+export function init() {
+  if (RNTUmengAnalytics.init) {
+    RNTUmengAnalytics.init()
+  }
+}
+
 export function getDeviceInfo() {
   return RNTUmengAnalytics.getDeviceInfo()
 }
@@ -16,6 +22,10 @@ export function signIn(userId, provider) {
 
 export function signOut() {
   RNTUmengAnalytics.signOut()
+}
+
+export function exitApp() {
+  RNTUmengAnalytics.exitApp()
 }
 
 // enterPage 和 leavePage 必须对称调用

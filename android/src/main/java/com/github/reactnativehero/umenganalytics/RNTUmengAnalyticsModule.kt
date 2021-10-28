@@ -23,14 +23,8 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
             channel = metaData.getString("UMENG_CHANNEL", "").trim()
 
             UMConfigure.setLogEnabled(debug)
-            UMConfigure.init(app, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
+            UMConfigure.preInit(app, appKey, channel)
 
-        }
-
-        // 初始化友盟统计
-        @JvmStatic fun analytics(app: Application) {
-            // 手动采集
-            MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
         }
 
     }
@@ -50,6 +44,16 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         constants["CHANNEL"] = channel
 
         return constants
+
+    }
+
+    @ReactMethod
+    fun init() {
+
+        UMConfigure.init(reactContext, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
+
+        // 手动采集
+        MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
 
     }
 
@@ -81,6 +85,11 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
     @ReactMethod
     fun signOut() {
         MobclickAgent.onProfileSignOff()
+    }
+
+    @ReactMethod
+    fun exitApp() {
+        android.os.Process.killProcess(android.os.Process.myPid())
     }
 
     @ReactMethod
