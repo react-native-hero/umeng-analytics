@@ -96,6 +96,8 @@ buildTypes {
 
 在 `MainApplication` 的 `onCreate` 方法进行初始化，如下：
 
+Kotlin 版本
+
 ```kotlin
 override fun onCreate() {
     val metaData = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
@@ -106,21 +108,14 @@ override fun onCreate() {
 }
 ```
 
-```java
-  
-    //先导入相关包
-    import com.github.reactnativehero.umenganalytics.RNTUmengAnalyticsModule;
-    import android.content.pm.PackageManager; 
-    import android.os.Bundle;
+Java 版本
 
-    try {
-             Bundle metaData  = this.getPackageManager().getApplicationInfo(
-                    this.getPackageName(), PackageManager.GET_META_DATA
-            ).metaData;
-           RNTUmengAnalyticsModule.init(this, metaData, false);
-      } catch (PackageManager.NameNotFoundException e) {
-          e.printStackTrace();
-      } 
+```java
+// onCreate 方法体换成下面这段
+Bundle metaData  = this.getPackageManager().getApplicationInfo(
+  this.getPackageName(), PackageManager.GET_META_DATA
+).metaData;
+RNTUmengAnalyticsModule.init(this, metaData, false);  
 ```
 
 ### 配置混淆规则
