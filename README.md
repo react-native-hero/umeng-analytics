@@ -106,6 +106,23 @@ override fun onCreate() {
 }
 ```
 
+```java
+  
+    //先导入相关包
+    import com.github.reactnativehero.umenganalytics.RNTUmengAnalyticsModule;
+    import android.content.pm.PackageManager; 
+    import android.os.Bundle;
+
+    try {
+             Bundle metaData  = this.getPackageManager().getApplicationInfo(
+                    this.getPackageName(), PackageManager.GET_META_DATA
+            ).metaData;
+           RNTUmengAnalyticsModule.init(this, metaData, false);
+      } catch (PackageManager.NameNotFoundException e) {
+          e.printStackTrace();
+      } 
+```
+
 ### 配置混淆规则
 
 在 `android/app/proguard-rules.pro` 添加以下混淆规则，注意替换自己的包名，并且删掉 `[` 和 `]`。
