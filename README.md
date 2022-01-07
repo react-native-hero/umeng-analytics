@@ -96,6 +96,8 @@ buildTypes {
 
 在 `MainApplication` 的 `onCreate` 方法进行初始化，如下：
 
+Kotlin 版本
+
 ```kotlin
 override fun onCreate() {
     val metaData = packageManager.getApplicationInfo(packageName, PackageManager.GET_META_DATA).metaData
@@ -104,6 +106,16 @@ override fun onCreate() {
     // 第三个参数表示是否显示调试信息
     RNTUmengAnalyticsModule.init(this, metaData, false)
 }
+```
+
+Java 版本
+
+```java
+// onCreate 方法体换成下面这段
+Bundle metaData  = this.getPackageManager().getApplicationInfo(
+  this.getPackageName(), PackageManager.GET_META_DATA
+).metaData;
+RNTUmengAnalyticsModule.init(this, metaData, false);  
 ```
 
 ### 配置混淆规则
