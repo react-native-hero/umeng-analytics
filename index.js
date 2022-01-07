@@ -16,6 +16,10 @@ export function getDeviceInfo() {
   return RNTUmengAnalytics.getDeviceInfo()
 }
 
+export function getPhoneNumber() {
+  return RNTUmengAnalytics.getPhoneNumber()
+}
+
 export function signIn(userId, provider) {
   RNTUmengAnalytics.signIn(userId, provider)
 }

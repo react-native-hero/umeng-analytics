@@ -125,6 +125,7 @@ import {
 
   init,
   getDeviceInfo,
+  getPhoneNumber,
   signIn,
   signOut,
   exitApp,
@@ -150,6 +151,11 @@ getDeviceInfo().then(data => {
   data.deviceId
   // mac is android only
   data.mac
+})
+
+getPhoneNumber().then(data => {
+    // 只有安卓有希望读取出本机的手机号码，前提是已获得 READ_PHONE_STATE 权限
+    data.phoneNumber
 })
 
 // 帐号统计

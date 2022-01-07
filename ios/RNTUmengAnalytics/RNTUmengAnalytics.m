@@ -46,6 +46,12 @@ RCT_EXPORT_METHOD(getDeviceInfo:(RCTPromiseResolveBlock)resolve reject:(RCTPromi
     
 }
 
+RCT_EXPORT_METHOD(getPhoneNumber:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+    resolve(@{
+        @"phoneNumber": @"",
+    });
+}
+
 // 账号统计
 RCT_EXPORT_METHOD(signIn:(NSString *)userId provider:(NSString *)provider) {
     if (provider && provider.length > 0) {

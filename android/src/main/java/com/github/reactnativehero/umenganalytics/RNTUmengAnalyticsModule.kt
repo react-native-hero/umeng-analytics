@@ -1,11 +1,18 @@
 package com.github.reactnativehero.umenganalytics
 
+import android.Manifest
 import android.app.Application
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.telephony.TelephonyManager
+import androidx.core.app.ActivityCompat
 import com.facebook.react.bridge.*
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 import com.umeng.commonsdk.statistics.common.DeviceConfig
+
 
 class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
 
@@ -66,6 +73,32 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         val map = Arguments.createMap()
         map.putString("deviceId", deviceId)
         map.putString("mac", mac)
+
+        promise.resolve(map)
+
+    }
+
+    @ReactMethod
+    fun getPhoneNumber(promise: Promise) {
+
+        var hasPermission = true
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val readPhoneStatePermission: Int = ActivityCompat.checkSelfPermission(reactContext, Manifest.permission.READ_PHONE_STATE)
+            if (readPhoneStatePermission != PackageManager.PERMISSION_GRANTED) {
+                hasPermission = false
+            }
+        }
+
+        val map = Arguments.createMap()
+
+        if (hasPermission) {
+            val manager = reactContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+            map.putString("phoneNumber", manager.line1Number)
+        }
+        else {
+            map.putString("error", "no permission")
+        }
 
         promise.resolve(map)
 
