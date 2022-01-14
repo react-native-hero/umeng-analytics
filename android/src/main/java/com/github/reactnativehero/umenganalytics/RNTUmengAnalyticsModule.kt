@@ -89,12 +89,23 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
                 hasPermission = false
             }
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val readPhoneNumbersPermission: Int = ActivityCompat.checkSelfPermission(reactContext, Manifest.permission.READ_PHONE_NUMBERS)
+            if (readPhoneNumbersPermission != PackageManager.PERMISSION_GRANTED) {
+                hasPermission = false
+            }
+        }
 
         val map = Arguments.createMap()
 
         if (hasPermission) {
-            val manager = reactContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
-            map.putString("phoneNumber", manager.line1Number)
+            try {
+                val manager = reactContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+                map.putString("phoneNumber", manager.line1Number)
+            }
+            catch (e: Exception) {
+                map.putString("error", e.localizedMessage)
+            }
         }
         else {
             map.putString("error", "no permission")
