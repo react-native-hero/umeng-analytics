@@ -45,9 +45,9 @@ RCT_EXPORT_METHOD(getDeviceInfo:(RCTPromiseResolveBlock)resolve reject:(RCTPromi
     NSString *bundleId = [self getBundleId];
     
     resolve(@{
-        @"deviceId": deviceId,
-        @"deviceType": deviceType,
-        @"brand": brand,
+        @"deviceId": [deviceId lowercaseString],
+        @"deviceType": [deviceType lowercaseString],
+        @"brand": [brand lowercaseString],
         @"bundleId": bundleId,
     });
     

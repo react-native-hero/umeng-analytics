@@ -74,9 +74,9 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         val bundleId = DeviceConfig.getPackageName(reactContext)
 
         val map = Arguments.createMap()
-        map.putString("deviceId", deviceId)
-        map.putString("deviceType", deviceType)
-        map.putString("brand", brand)
+        map.putString("deviceId", deviceId.toLowerCase())
+        map.putString("deviceType", deviceType.toLowerCase())
+        map.putString("brand", brand.toLowerCase())
         map.putString("bundleId", bundleId)
 
         promise.resolve(map)
