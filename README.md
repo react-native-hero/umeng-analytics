@@ -158,11 +158,15 @@ init()
 // 好像 RN 官方也没提供此方法，单个方法不好写一个库，就放在这个库了
 exitApp()
 
-// 集成测试，获取设备信息
 getDeviceInfo().then(data => {
   data.deviceId
-  // mac is android only
-  data.mac
+  data.deviceType
+  data.brand
+  data.bundleId
+})
+
+getUserAgent().then(data => {
+    data.userAgent
 })
 
 getPhoneNumber().then(data => {

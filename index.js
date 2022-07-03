@@ -16,6 +16,10 @@ export function getDeviceInfo() {
   return RNTUmengAnalytics.getDeviceInfo()
 }
 
+export function getUserAgent() {
+  return RNTUmengAnalytics.getUserAgent()
+}
+
 export function getPhoneNumber() {
   return RNTUmengAnalytics.getPhoneNumber()
 }

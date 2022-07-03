@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.telephony.TelephonyManager
+import android.webkit.WebSettings
 import androidx.core.app.ActivityCompat
 import com.facebook.react.bridge.*
 import com.umeng.analytics.MobclickAgent
@@ -68,11 +69,37 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
     fun getDeviceInfo(promise: Promise) {
 
         val deviceId = DeviceConfig.getDeviceIdForGeneral(reactContext)
-        val mac = DeviceConfig.getMac(reactContext)
+        val deviceType = DeviceConfig.getDeviceType(reactContext)
+        val brand = Build.BRAND
+        val bundleId = DeviceConfig.getPackageName(reactContext)
 
         val map = Arguments.createMap()
         map.putString("deviceId", deviceId)
-        map.putString("mac", mac)
+        map.putString("deviceType", deviceType)
+        map.putString("brand", brand)
+        map.putString("bundleId", bundleId)
+
+        promise.resolve(map)
+
+    }
+
+    @ReactMethod
+    fun getUserAgent(promise: Promise) {
+
+        val map = Arguments.createMap()
+
+        try {
+            val userAgent = WebSettings.getDefaultUserAgent(reactContext)
+            map.putString("userAgent", userAgent)
+        } catch (e: RuntimeException) {
+            val userAgent = System.getProperty("http.agent")
+            if (userAgent != null && userAgent.isNotEmpty()) {
+                map.putString("userAgent", userAgent)
+            }
+            else {
+                map.putString("error", e.localizedMessage)
+            }
+        }
 
         promise.resolve(map)
 

@@ -2,6 +2,7 @@
 
 #import <UMCommon/UMConfigure.h>
 #import <UMCommon/MobClick.h>
+#import <WebKit/WebKit.h>
 
 @implementation RNTUmengAnalytics
 
@@ -39,11 +40,35 @@ RCT_EXPORT_MODULE(RNTUmengAnalytics);
 RCT_EXPORT_METHOD(getDeviceInfo:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
 
     NSString *deviceId =[UMConfigure deviceIDForIntegration];
+    NSString *deviceType = [self getDeviceType];
+    NSString *brand = @"Apple";
+    NSString *bundleId = [self getBundleId];
     
     resolve(@{
         @"deviceId": deviceId,
+        @"deviceType": deviceType,
+        @"brand": brand,
+        @"bundleId": bundleId,
     });
     
+}
+
+RCT_EXPORT_METHOD(getUserAgent:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+        __block WKWebView *webView = [[WKWebView alloc] init];
+
+        [webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+            if (error) {
+                reject(@"error", error.localizedDescription, nil);
+            }
+            else {
+                resolve(@{
+                    @"userAgent": [NSString stringWithFormat:@"%@", result],
+                });
+            }
+            webView = nil;
+        }];
+    });
 }
 
 RCT_EXPORT_METHOD(getPhoneNumber:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
@@ -95,6 +120,29 @@ RCT_EXPORT_METHOD(sendEventData:(NSString *)eventId data:(NSDictionary *)data) {
 
 RCT_EXPORT_METHOD(sendEventCounter:(NSString *)eventId data:(NSDictionary *)data counter:(int)counter) {
     [MobClick event:eventId attributes:data counter:counter];
+}
+
+- (NSString *) getBundleId {
+    return [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleIdentifier"];
+}
+
+- (NSString *) getDeviceType {
+    switch ([[UIDevice currentDevice] userInterfaceIdiom]) {
+        case UIUserInterfaceIdiomPhone: return @"Phone";
+        case UIUserInterfaceIdiomPad:
+            if (TARGET_OS_MACCATALYST) {
+                return @"Desktop";
+            }
+            if (@available(iOS 14.0, *)) {
+                if ([NSProcessInfo processInfo].isiOSAppOnMac) {
+                    return @"Desktop";
+                }
+            }
+            return @"Tablet";
+        case UIUserInterfaceIdiomTV: return @"Tv";
+        case UIUserInterfaceIdiomMac: return @"Desktop";
+        default: return @"Unknown";
+    }
 }
 
 @end
