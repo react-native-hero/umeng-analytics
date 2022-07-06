@@ -41,7 +41,7 @@ RCT_EXPORT_METHOD(getDeviceInfo:(RCTPromiseResolveBlock)resolve reject:(RCTPromi
 
     NSString *deviceId =[UMConfigure deviceIDForIntegration];
     NSString *deviceType = [self getDeviceType];
-    NSString *brand = @"Apple";
+    NSString *brand = @"apple";
     NSString *bundleId = [self getBundleId];
     
     resolve(@{
@@ -54,20 +54,26 @@ RCT_EXPORT_METHOD(getDeviceInfo:(RCTPromiseResolveBlock)resolve reject:(RCTPromi
 }
 
 RCT_EXPORT_METHOD(getUserAgent:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    __weak RNTUmengAnalytics *weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
-        __block WKWebView *webView = [[WKWebView alloc] init];
+        __strong RNTUmengAnalytics *strongSelf = weakSelf;
+        if (strongSelf) {
+            // Save WKWebView (it might deallocate before we ask for user Agent)
+            __block WKWebView *webView = [[WKWebView alloc] init];
 
-        [webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
-            if (error) {
-                reject(@"error", error.localizedDescription, nil);
-            }
-            else {
-                resolve(@{
-                    @"userAgent": [NSString stringWithFormat:@"%@", result],
-                });
-            }
-            webView = nil;
-        }];
+            [webView evaluateJavaScript:@"window.navigator.userAgent;" completionHandler:^(id _Nullable result, NSError * _Nullable error) {
+                if (error) {
+                    reject(@"error", error.localizedDescription, nil);
+                }
+                else {
+                    resolve(@{
+                        @"userAgent": [NSString stringWithFormat:@"%@", result],
+                    });
+                }
+                // Destroy the WKWebView after task is complete
+                webView = nil;
+            }];
+        }
     });
 }
 
