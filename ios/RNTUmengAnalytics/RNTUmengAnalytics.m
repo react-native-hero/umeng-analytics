@@ -36,20 +36,20 @@ static NSString *CHANNEL = @"";
 
 RCT_EXPORT_MODULE(RNTUmengAnalytics);
 
+RCT_EXPORT_METHOD(init:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
+
+    NSDictionary *deviceInfo = [self getDeviceInfo];
+    
+    resolve(deviceInfo);
+    
+}
+
 // 获得设备信息，用于集成测试
 RCT_EXPORT_METHOD(getDeviceInfo:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
-
-    NSString *deviceId =[UMConfigure deviceIDForIntegration];
-    NSString *deviceType = [self getDeviceType];
-    NSString *brand = @"apple";
-    NSString *bundleId = [self getBundleId];
     
-    resolve(@{
-        @"deviceId": [deviceId lowercaseString],
-        @"deviceType": [deviceType lowercaseString],
-        @"brand": [brand lowercaseString],
-        @"bundleId": bundleId,
-    });
+    NSDictionary *deviceInfo = [self getDeviceInfo];
+    
+    resolve(deviceInfo);
     
 }
 
@@ -126,6 +126,22 @@ RCT_EXPORT_METHOD(sendEventData:(NSString *)eventId data:(NSDictionary *)data) {
 
 RCT_EXPORT_METHOD(sendEventCounter:(NSString *)eventId data:(NSDictionary *)data counter:(int)counter) {
     [MobClick event:eventId attributes:data counter:counter];
+}
+
+- (NSDictionary *) getDeviceInfo {
+    
+    NSString *deviceId =[UMConfigure deviceIDForIntegration];
+    NSString *deviceType = [self getDeviceType];
+    NSString *brand = @"apple";
+    NSString *bundleId = [self getBundleId];
+    
+    return @{
+        @"deviceId": [deviceId lowercaseString],
+        @"deviceType": [deviceType lowercaseString],
+        @"brand": [brand lowercaseString],
+        @"bundleId": bundleId,
+    };
+    
 }
 
 - (NSString *) getBundleId {

@@ -115,7 +115,7 @@ Java 版本
 Bundle metaData  = this.getPackageManager().getApplicationInfo(
   this.getPackageName(), PackageManager.GET_META_DATA
 ).metaData;
-RNTUmengAnalyticsModule.init(this, metaData, false);  
+RNTUmengAnalyticsModule.init(this, metaData, false);
 ```
 
 ### 配置混淆规则
@@ -151,8 +151,14 @@ import {
 
 // 对于安卓来说，需要等用户同意隐私政策后，再调用 init，js 的 init 才是真正的初始化
 // https://developer.umeng.com/docs/119267/detail/182050
-// 对于 ios 来说，不调用 init 也没问题
-init()
+// 因为安卓的 deviceId 要等 init 执行结束后才能获取到值
+// 因此调用 init 也返回一份 device info，避免异步产生问题
+init().then(deviceInfo => {
+  deviceInfo.deviceId
+  deviceInfo.deviceType
+  deviceInfo.brand
+  deviceInfo.bundleId
+})
 
 // 提供一个退出 app 的方法
 // 好像 RN 官方也没提供此方法，单个方法不好写一个库，就放在这个库了
@@ -166,12 +172,12 @@ getDeviceInfo().then(data => {
 })
 
 getUserAgent().then(data => {
-    data.userAgent
+  data.userAgent
 })
 
 getPhoneNumber().then(data => {
-    // 只有安卓有希望读取出本机的手机号码，前提是已获得 READ_PHONE_STATE 权限
-    data.phoneNumber
+  // 只有安卓有希望读取出本机的手机号码，前提是已获得 READ_PHONE_STATE 权限
+  data.phoneNumber
 })
 
 // 帐号统计

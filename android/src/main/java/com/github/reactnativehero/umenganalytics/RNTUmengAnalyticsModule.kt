@@ -13,7 +13,9 @@ import com.facebook.react.bridge.*
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 import com.umeng.commonsdk.statistics.common.DeviceConfig
-
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 
 class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
 
@@ -56,28 +58,33 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
     }
 
     @ReactMethod
-    fun init() {
+    fun init(promise: Promise) {
 
+        UMConfigure.submitPolicyGrantResult(reactContext, true)
         UMConfigure.init(reactContext, appKey, channel, UMConfigure.DEVICE_TYPE_PHONE, pushSecret)
 
         // 手动采集
         MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
+
+        fun tryDeviceInfo() {
+            val map = this.getDeviceInfoMap()
+            if (map.getString("deviceId").isNullOrEmpty()) {
+                Executors.newSingleThreadScheduledExecutor().schedule({
+                    tryDeviceInfo()
+                }, 50, TimeUnit.MILLISECONDS)
+            }
+            else {
+                promise.resolve(map)
+            }
+        }
+        tryDeviceInfo()
 
     }
 
     @ReactMethod
     fun getDeviceInfo(promise: Promise) {
 
-        val deviceId = DeviceConfig.getDeviceIdForGeneral(reactContext)
-        val deviceType = DeviceConfig.getDeviceType(reactContext)
-        val brand = Build.BRAND
-        val bundleId = DeviceConfig.getPackageName(reactContext)
-
-        val map = Arguments.createMap()
-        map.putString("deviceId", deviceId.toLowerCase())
-        map.putString("deviceType", deviceType.toLowerCase())
-        map.putString("brand", brand.toLowerCase())
-        map.putString("bundleId", bundleId)
+        val map = this.getDeviceInfoMap()
 
         promise.resolve(map)
 
@@ -201,6 +208,21 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
     @ReactMethod
     fun sendError(error: String) {
         MobclickAgent.reportError(reactContext, error)
+    }
+
+    private fun getDeviceInfoMap(): WritableMap {
+        val deviceId = DeviceConfig.getDeviceIdForGeneral(reactContext)
+        val deviceType = DeviceConfig.getDeviceType(reactContext)
+        val brand = Build.BRAND
+        val bundleId = DeviceConfig.getPackageName(reactContext)
+
+        val map = Arguments.createMap()
+        map.putString("deviceId", deviceId.toLowerCase())
+        map.putString("deviceType", deviceType.toLowerCase())
+        map.putString("brand", brand.toLowerCase())
+        map.putString("bundleId", bundleId)
+
+        return map
     }
 
     override fun onHostResume() {

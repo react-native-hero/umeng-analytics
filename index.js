@@ -7,9 +7,7 @@ const { RNTUmengAnalytics } = NativeModules
 export const CHANNEL = RNTUmengAnalytics.CHANNEL
 
 export function init() {
-  if (RNTUmengAnalytics.init) {
-    RNTUmengAnalytics.init()
-  }
+  return RNTUmengAnalytics.init()
 }
 
 export function getDeviceInfo() {
