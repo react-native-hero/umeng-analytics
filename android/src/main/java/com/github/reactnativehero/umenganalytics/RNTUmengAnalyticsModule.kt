@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings.Secure
 import android.telephony.TelephonyManager
 import android.webkit.WebSettings
 import androidx.core.app.ActivityCompat
@@ -13,6 +14,7 @@ import com.facebook.react.bridge.*
 import com.umeng.analytics.MobclickAgent
 import com.umeng.commonsdk.UMConfigure
 import com.umeng.commonsdk.statistics.common.DeviceConfig
+import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
@@ -211,15 +213,18 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
     }
 
     private fun getDeviceInfoMap(): WritableMap {
-        val deviceId = DeviceConfig.getDeviceIdForGeneral(reactContext)
+        var deviceId = DeviceConfig.getDeviceIdForGeneral(reactContext)
+        if (deviceId.isEmpty()) {
+            deviceId = Secure.getString(reactContext.contentResolver, Secure.ANDROID_ID)
+        }
         val deviceType = DeviceConfig.getDeviceType(reactContext)
         val brand = Build.BRAND
         val bundleId = DeviceConfig.getPackageName(reactContext)
 
         val map = Arguments.createMap()
-        map.putString("deviceId", deviceId.toLowerCase())
-        map.putString("deviceType", deviceType.toLowerCase())
-        map.putString("brand", brand.toLowerCase())
+        map.putString("deviceId", deviceId.toLowerCase(Locale.ROOT))
+        map.putString("deviceType", deviceType.toLowerCase(Locale.ROOT))
+        map.putString("brand", brand.toLowerCase(Locale.ROOT))
         map.putString("bundleId", bundleId)
 
         return map
