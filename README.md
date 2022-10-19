@@ -151,18 +151,15 @@ import {
 
 // 对于安卓来说，需要等用户同意隐私政策后，再调用 init，js 的 init 才是真正的初始化
 // https://developer.umeng.com/docs/119267/detail/182050
-// 因为安卓的 deviceId 要等 init 执行结束后才能获取到值
-// 因此调用 init 也返回一份 device info，避免异步产生问题
-init().then(deviceInfo => {
-  deviceInfo.deviceId
-  deviceInfo.deviceType
-  deviceInfo.brand
-  deviceInfo.bundleId
+init().then(() => {
+  // 初始化完成
 })
 
 // 提供一个退出 app 的方法
 // 好像 RN 官方也没提供此方法，单个方法不好写一个库，就放在这个库了
 exitApp()
+
+// 以下方法必须等 init() 调用结束后才能调用，否则会抛出错误
 
 getDeviceInfo().then(data => {
   data.deviceId

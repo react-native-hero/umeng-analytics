@@ -38,9 +38,7 @@ RCT_EXPORT_MODULE(RNTUmengAnalytics);
 
 RCT_EXPORT_METHOD(init:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject) {
 
-    NSDictionary *deviceInfo = [self getDeviceInfo];
-    
-    resolve(deviceInfo);
+    resolve(@{});
     
 }
 

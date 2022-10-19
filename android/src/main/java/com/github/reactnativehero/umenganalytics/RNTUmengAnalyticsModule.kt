@@ -19,6 +19,7 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
+
 class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
 
     companion object {
@@ -45,6 +46,8 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         reactContext.addLifecycleEventListener(this)
     }
 
+    private var isReady = false
+
     override fun getName(): String {
         return "RNTUmengAnalytics"
     }
@@ -68,6 +71,19 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         // 手动采集
         MobclickAgent.setPageCollectionMode(MobclickAgent.PageMode.MANUAL)
 
+        isReady = true
+
+        promise.resolve(Arguments.createMap())
+
+    }
+
+    @ReactMethod
+    fun getDeviceInfo(promise: Promise) {
+
+        if (!checkReady(promise)) {
+            return
+        }
+
         fun tryDeviceInfo() {
             val map = this.getDeviceInfoMap()
             if (map.getString("deviceId").isNullOrEmpty()) {
@@ -84,16 +100,11 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
     }
 
     @ReactMethod
-    fun getDeviceInfo(promise: Promise) {
-
-        val map = this.getDeviceInfoMap()
-
-        promise.resolve(map)
-
-    }
-
-    @ReactMethod
     fun getUserAgent(promise: Promise) {
+
+        if (!checkReady(promise)) {
+            return
+        }
 
         val map = Arguments.createMap()
 
@@ -116,6 +127,10 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
 
     @ReactMethod
     fun getPhoneNumber(promise: Promise) {
+
+        if (!checkReady(promise)) {
+            return
+        }
 
         var hasPermission = true
 
@@ -152,7 +167,17 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
     }
 
     @ReactMethod
+    fun exitApp() {
+        android.os.Process.killProcess(android.os.Process.myPid())
+    }
+
+    @ReactMethod
     fun signIn(name: String, provider: String?) {
+
+        if (!checkReady(null)) {
+            return
+        }
+
         val hasProvider = provider?.isNotEmpty() ?: false
         if (hasProvider) {
             MobclickAgent.onProfileSignIn(provider, name)
@@ -164,42 +189,58 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
 
     @ReactMethod
     fun signOut() {
+        if (!checkReady(null)) {
+            return
+        }
         MobclickAgent.onProfileSignOff()
     }
 
     @ReactMethod
-    fun exitApp() {
-        android.os.Process.killProcess(android.os.Process.myPid())
-    }
-
-    @ReactMethod
     fun enterPage(pageName: String) {
+        if (!checkReady(null)) {
+            return
+        }
         MobclickAgent.onPageStart(pageName)
     }
 
     @ReactMethod
     fun leavePage(pageName: String) {
+        if (!checkReady(null)) {
+            return
+        }
         MobclickAgent.onPageEnd(pageName)
     }
 
     @ReactMethod
     fun sendEvent(eventId: String) {
+        if (!checkReady(null)) {
+            return
+        }
         MobclickAgent.onEvent(reactContext, eventId)
     }
 
     @ReactMethod
     fun sendEventLabel(eventId: String, label: String) {
+        if (!checkReady(null)) {
+            return
+        }
         MobclickAgent.onEvent(reactContext, eventId, label)
     }
 
     @ReactMethod
     fun sendEventData(eventId: String, data: ReadableMap) {
+        if (!checkReady(null)) {
+            return
+        }
         val map = data.toHashMap()
         MobclickAgent.onEventObject(reactContext, eventId, map)
     }
 
     @ReactMethod
     fun sendEventCounter(eventId: String, data: ReadableMap, counter: Int) {
+        if (!checkReady(null)) {
+            return
+        }
         val map = HashMap<String, String>()
         for ((key, value) in data.toHashMap()) {
             map[key] = value as String
@@ -209,13 +250,28 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
 
     @ReactMethod
     fun sendError(error: String) {
+        if (!checkReady(null)) {
+            return
+        }
         MobclickAgent.reportError(reactContext, error)
     }
 
+    private fun checkReady(promise: Promise?): Boolean {
+        if (!isReady) {
+            promise?.reject("-1", "umeng sdk is not ready.")
+            return false
+        }
+        return true
+    }
+
     private fun getDeviceInfoMap(): WritableMap {
+        // 获取 deviceId 改为三次尝试
         var deviceId = DeviceConfig.getDeviceIdForGeneral(reactContext)
         if (deviceId.isEmpty()) {
             deviceId = Secure.getString(reactContext.contentResolver, Secure.ANDROID_ID)
+        }
+        if (deviceId.isEmpty()) {
+            deviceId = getUUID()
         }
         val deviceType = DeviceConfig.getDeviceType(reactContext)
         val brand = Build.BRAND
@@ -228,6 +284,24 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         map.putString("bundleId", bundleId)
 
         return map
+    }
+
+    private fun getUUID(): String {
+        val sharedPref = reactContext.currentActivity?.getPreferences(Context.MODE_PRIVATE)
+                ?: return ""
+
+        val key = "umeng_analytics_uuid"
+
+        var uuid = sharedPref.getString(key, "")
+        if (uuid.isNullOrEmpty()) {
+            uuid = UUID.randomUUID().toString()
+            with (sharedPref.edit()) {
+                putString(key, uuid)
+                apply()
+            }
+        }
+
+        return uuid
     }
 
     override fun onHostResume() {
