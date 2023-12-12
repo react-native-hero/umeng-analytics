@@ -38,7 +38,7 @@ dependencies {
     implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.3.40')}"
 
-    implementation "com.umeng.umsdk:common:${safeExtGet('umengCommonVersion', '9.6.5')}"
+    implementation "com.umeng.umsdk:common:${safeExtGet('umengCommonVersion', '9.6.6')}"
     implementation "com.umeng.umsdk:asms:${safeExtGet('umengAsmsVersion', '1.8.0')}"
 }
 
