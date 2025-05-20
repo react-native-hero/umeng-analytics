@@ -18,6 +18,7 @@ import java.util.*
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
+import androidx.core.content.edit
 
 
 class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext), LifecycleEventListener {
@@ -52,7 +53,7 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         return "RNTUmengAnalytics"
     }
 
-    override fun getConstants(): Map<String, Any>? {
+    override fun getConstants(): Map<String, Any> {
 
         val constants: MutableMap<String, Any> = HashMap()
 
@@ -134,11 +135,9 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
 
         var hasPermission = true
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            val readPhoneStatePermission: Int = ActivityCompat.checkSelfPermission(reactContext, Manifest.permission.READ_PHONE_STATE)
-            if (readPhoneStatePermission != PackageManager.PERMISSION_GRANTED) {
-                hasPermission = false
-            }
+        val readPhoneStatePermission: Int = ActivityCompat.checkSelfPermission(reactContext, Manifest.permission.READ_PHONE_STATE)
+        if (readPhoneStatePermission != PackageManager.PERMISSION_GRANTED) {
+            hasPermission = false
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             val readPhoneNumbersPermission: Int = ActivityCompat.checkSelfPermission(reactContext, Manifest.permission.READ_PHONE_NUMBERS)
@@ -278,9 +277,9 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         val bundleId = DeviceConfig.getPackageName(reactContext)
 
         val map = Arguments.createMap()
-        map.putString("deviceId", deviceId.toLowerCase(Locale.ROOT))
-        map.putString("deviceType", deviceType.toLowerCase(Locale.ROOT))
-        map.putString("brand", brand.toLowerCase(Locale.ROOT))
+        map.putString("deviceId", deviceId.lowercase(Locale.ROOT))
+        map.putString("deviceType", deviceType.lowercase(Locale.ROOT))
+        map.putString("brand", brand.lowercase(Locale.ROOT))
         map.putString("bundleId", bundleId)
 
         return map
@@ -295,9 +294,8 @@ class RNTUmengAnalyticsModule(private val reactContext: ReactApplicationContext)
         var uuid = sharedPref.getString(key, "")
         if (uuid.isNullOrEmpty()) {
             uuid = UUID.randomUUID().toString()
-            with (sharedPref.edit()) {
+            sharedPref.edit {
                 putString(key, uuid)
-                apply()
             }
         }
 

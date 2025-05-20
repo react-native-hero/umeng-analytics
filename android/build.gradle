@@ -5,6 +5,7 @@ buildscript {
     repositories {
         mavenCentral()
         google()
+        maven { url 'https://repo1.maven.org/maven2/' }
     }
 
     dependencies {
@@ -38,8 +39,8 @@ dependencies {
     implementation "com.facebook.react:react-native:${safeExtGet('reactNativeVersion', '+')}"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.7.20')}"
 
-    api "com.umeng.umsdk:common:+"
-    api "com.umeng.umsdk:asms:+"
+    implementation 'com.umeng.umsdk:common:+'//必选
+    implementation 'com.umeng.umsdk:asms:+'//必选
 }
 
 apply plugin: 'kotlin-android'
